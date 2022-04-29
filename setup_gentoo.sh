@@ -65,7 +65,7 @@ deviceConfiguration() {
             
             # choose bios
             if [ "$boot_mode" = "efi" ]; then
-                diskSetup() {
+                efiDiskSetup() {
 
                     printf ${CYAN}"Would you like to proceed with the auto setup for ${disk_chk}? \n${MAGENTA}This will create a GPT partition scheme where:${CYAN}\n${disk_chk}1 = 256M EFI System\n${disk_chk}2 = 4G Linux swap\n${disk_chk}3 = Linux filesystem \n\nEnter y to continue with auto setup or n to configure your own partitions \n> ${WHITE}"             
                     read auto_prov_ans
@@ -112,66 +112,68 @@ deviceConfiguration() {
                             printf ${CYAN}"${$disk_chk}3 - $(( $(( $(lsblk -b | grep -m1 sda | awk '{ print $4 }') - (1024 * 4 * 1048576) - (256 * 1048576) )) / 1073741824 )) - root"
                         }
 
-                        if [ "$auto_prov_ans_n_option" = "DIY" ]; then
+                        # if [ "$auto_prov_ans_n_option" = "DIY" ]; then
 
-                            DIY() {
+                        #     DIY() {
 
-                                printf ${MAGENTA}"These are your partitions now:\n\n"${CYAN}
-                                cat devices
-                                printf ${MAGENTA}"\nWhat do you want to do now?\n${CYAN}1) ${LIGHTRED}REMOVE ALL PARTITIONS${CYAN}\n2) ${WHITE}Delete 1 partition${CYAN}\n3) ${WHITE}Create 1 partition${CYAN}\n4) ${WHITE}Change partition type\n${CYAN}> ${WHITE}"
+                        #         printf ${MAGENTA}"These are your partitions now:\n\n"${CYAN}
+                        #         cat devices
+                        #         printf ${MAGENTA}"\nWhat do you want to do now?\n${CYAN}1) ${LIGHTRED}REMOVE ALL PARTITIONS${CYAN}\n2) ${WHITE}Delete 1 partition${CYAN}\n3) ${WHITE}Create 1 partition${CYAN}\n4) ${WHITE}Change partition type\n${CYAN}> ${WHITE}"
                                 
-                                read DIY_option
+                        #         read DIY_option
 
-                                if [ "$DIY_option" = '1' ]; then 
-                                    printf ${LIGHTRED}"ARE YOU SURE DO YOU WANT TO REMOVE ALL PARTITIONS?\n${CYAN}> ${WHITE}"                                
-                                    read REMOVE_ALL_PARTITIONS_answer
+                        #         if [ "$DIY_option" = '1' ]; then 
+                        #             printf ${LIGHTRED}"ARE YOU SURE DO YOU WANT TO REMOVE ALL PARTITIONS?\n${CYAN}> ${WHITE}"                                
+                        #             read REMOVE_ALL_PARTITIONS_answer
 
-                                    if [ "$REMOVE_ALL_PARTITIONS_answer" = 'y' ]; then
+                        #             if [ "$REMOVE_ALL_PARTITIONS_answer" = 'y' ]; then
                                        
-                                        wipefs -a $disk_chk
-                                        parted -a optimal $disk_chk --script mklabel gpt
+                        #                 wipefs -a $disk_chk
+                        #                 parted -a optimal $disk_chk --script mklabel gpt
 
                                         
                                         
-                                        cat devices
-                                    fi
+                        #                 cat devices
+                        #             fi
 
 
-                                elif [ "$DIY_option" = '2' ]; then 
-                                    printf ""
+                        #         elif [ "$DIY_option" = '2' ]; then 
+                        #             printf ""
 
 
-                                elif [ "$DIY_option" = '3' ]; then
+                        #         elif [ "$DIY_option" = '3' ]; then
 
-                                    DIY_option3() {
+                        #             DIY_option3() {
 
-                                        printf ${CYAN}"Partition number ($(lsblk | grep $disk -c )-128, default $(lsblk | grep $disk -c)): ${WHITE}"
-                                        read DIY_option_3_partition_number
+                        #                 printf ${CYAN}"Partition number ($(lsblk | grep $disk -c )-128, default $(lsblk | grep $disk -c)): ${WHITE}"
+                        #                 read DIY_option_3_partition_number
 
-                                        if [ "$DIY_option_3_partition_number" -lt 128 && "$DIY_option_3_partition_number" -ge "$(lsblk | grep $disk -c)" ]; then
+                        #                 if [ "$DIY_option_3_partition_number" -lt 128 && "$DIY_option_3_partition_number" -ge "$(lsblk | grep $disk -c)" ]; then
 
-                                        
-
-
-                                        else
-                                            errorMessage "$DIY_option_3_partition_number is not in range."
-                                            DIY_option3
-
-                                        fi
-
-                                    }
-                                    DIY_option3
-
-                                else 
-                                    errorMessage "$DIY_option is not a valid option!"
+                        #                     printf ${CYAN}"How much space do you want to give to this partition?"
 
 
-                                fi
+
+                        #                 else
+                        #                     errorMessage "$DIY_option_3_partition_number is not in range."
+                        #                     DIY_option3
+
+                        #                 fi
+
+                        #             }
+                        #             DIY_option3
+
+                        #         else 
+                        #             errorMessage "$DIY_option is not a valid option!"
+
+
+                        #         fi
                             
-                            }
-                            DIY
+                        #     }
+                        #     DIY
 
-                        elif [ "$auto_prov_ans_n_option" = "guided" ]; then
+                        #el
+                        if [ "$auto_prov_ans_n_option" = "guided" ]; then
                             guidedDisks() {
 
                                 printf ${CYAN}"Welcome to the guided partition setup! Let's go to the partitions \nHere we will need at least 2 partitions, one for boot and the other one for root!\n\nYou can also opt for a swap partition (swap partitions are like an extention of RAM and substitutes it when RAM is full). It is recommended to have at least 2G of swap.\n\nDo you also want a swap partition (y/n)?\n> ${WHITE}"
@@ -191,6 +193,12 @@ deviceConfiguration() {
                                 fi
 
                                 showPartitions
+
+
+                                
+
+
+
                                 printf
 
                             }
@@ -204,7 +212,7 @@ deviceConfiguration() {
 
                     fi 
                 }
-                diskSetup
+                efiDiskSetup
 
             elif [ "$boot_mode" = "bios" ]; then
                 printf ""
@@ -226,3 +234,119 @@ deviceConfiguration() {
 
 }
 deviceConfiguration
+printf ${LIGHTGREEN}"Device configuration is done! Proceeding to the next step, stage3!"
+sleep 3
+clear
+
+printf ${CYAN}"Enter the number for the stage3 you want to use:\n1) ${WHITE}regular-openrc ${CYAN}recommended\n2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened"
+read stage3select
+
+printf ${LIGHTGREEN}"Beginning the installation, this will take several minutes!\n"
+
+#copying files into place
+mount $part_3 /mnt/gentoo
+mv deploygentoo-master /mnt/gentoo
+mv master.zip /mnt/gentoo
+mv network_devices /mnt/gentoo/deploygentoo-master/
+cd /mnt/gentoo/deploygentoo-master
+
+install_vars=/mnt/gentoo/deploygentoo-master
+install_vars
+cpus=$(grep -c ^processor /proc/cpuinfo)
+pluscpu=$(( cpus + 1 ))
+echo "$disk" >> "$install_vars"
+echo "$cpus" >> "$install_vars" 
+echo "$part_1" >> "$install_vars"
+echo "$part_2" >> "$install_vars"
+echo "$part_3" >> "$install_vars"
+cat network_devices >> "$install_vars"
+rm -f network_devices
+
+case $stage3select in 
+    1)
+        GENTOO_TYPE=latest-stage3-amd64-openrc
+        ;;
+    
+    2)
+        GENTOO_TYPE=latest-stage3-amd64-systemd
+        ;;
+    
+    3)
+        GENTOO_TYPE=latest-stage3-amd64-desktop-openrc
+        ;;
+
+    4)
+        GENTOO_TYPE=latest-stage3-amd64-desktop-systemd
+        ;;
+    
+    5)
+        GENTOO_TYPE=latest-stage3-amd64-hardened-openrc
+        ;;
+
+    6)
+        GENTOO_TYPE=latest-stage3-amd64-musl
+        ;;
+
+    7)
+        GENTOO_TYPE=latest-stage3-amd64-musl-hardened
+        ;;
+esac
+
+STAGE3_PATH_URL=http://distfiles.gentoo.org/releases/amd64/autobuilds/$GENTOO_TYPE.txt
+STAGE3_PATH=$(curl -s $STAGE3_PATH_URL | grep -v "^#" | cut -d " " -f1)
+STAGE3_URL=http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3_PATH
+
+touch /mnt/gentoo/gentootype.txt
+echo $GENTOO_TYPE >> /mnt/gentoo/gentootype.txt
+
+cd /mnt/gentoo
+
+# stage3
+getStage3() {
+
+	wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 $STAGE3_URL
+
+    checkStage3() {
+
+    if [ -e /mnt/gentoo/stage3* ];  then
+        printf ${LIGHTGREEN}"Stage3 found!"
+    
+    else
+        printf ${LIGHTRED}"Could not download Stage3, do you want to retry?"
+        read stage3_fail_answer
+
+        if [ "$stage3_fail_answer" = "y" ]; then
+            clear
+            getStage3
+
+        else 
+            printf ${LIGHTRED}"Please provide a valid stage3 download link\n${MAGENTA}ex: ${WHITE}${STAGE3_URL}"
+            read provided_stage3
+            
+	        wget --retry-connrefused --waitretry=1 --read-timeout=20 --timeout=15 -t 0 $provided_stage3
+
+            checkStage3
+
+        fi
+
+    fi
+
+    }
+    checkStage3
+}
+getStage3
+
+
+stage3=$(ls /mnt/gentoo/stage3*)
+tar xpvf $stage3 --xattrs-include='*.*' --numeric-owner
+printf "Stage3 ready!\n"
+
+
+
+ 
+
+ 
+ 
+ 
+
+
