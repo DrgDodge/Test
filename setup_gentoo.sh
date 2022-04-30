@@ -237,7 +237,7 @@ printf ${LIGHTGREEN}"Device configuration is done! Proceeding to the next step, 
 sleep 3
 clear
 
-printf ${CYAN}"Enter the number for the stage3 you want to use:\n1) ${WHITE}regular-openrc ${MAGENTA}recommended\n2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened\n${CYAN}> ${WHITE}"
+printf ${CYAN}"Enter the number for the stage3 you want to use:\n${CYAN}1) ${WHITE}regular-openrc ${MAGENTA}recommended\n${CYAN}2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened\n${CYAN}> ${WHITE}"
 read stage3select
 
 printf ${LIGHTGREEN}"Beginning the installation, this will take several minutes!\n"
@@ -247,7 +247,7 @@ mount $part_3 /mnt/gentoo
 mv $script_dir/../deploygentoo-master /mnt/gentoo/
 
 
-install_vars=/mnt/gentoo/deploygentoo-master/
+install_vars=/mnt/gentoo/deploygentoo-master/install_vars
 cpus=$(grep -c ^processor /proc/cpuinfo)
 pluscpu=$(( cpus + 1 ))
 echo "$disk" >> "$install_vars"
