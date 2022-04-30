@@ -66,7 +66,7 @@ deviceConfiguration() {
             if [ "$boot_mode" = "efi" ]; then
                 efiDiskSetup() {
 
-                    printf ${CYAN}"Would you like to proceed with the auto setup for ${disk_chk}? \n${MAGENTA}This will create a GPT partition scheme where:${CYAN}\n${disk_chk}1 = 256M EFI System\n${disk_chk}2 = 4G Linux swap\n${disk_chk}3 = Linux filesystem \n\nEnter y to continue with auto setup or n to configure your own partitions \n> ${WHITE}"             
+                    printf ${CYAN}"Would you like to proceed with the auto setup for ${disk_chk}? \n${MAGENTA}This will create a GPT partition scheme where:${CYAN}\n${disk_chk}1 = 256M EFI System\n${disk_chk}2 = 4G Linux swap\n${disk_chk}3 = Linux filesystem \n\nEnter y to continue with auto setup or n to configure your own partitions \n> ${WHITE}" ${CYAN}    
                     read auto_prov_ans
 
                     # auto made partitions
@@ -237,7 +237,7 @@ printf ${LIGHTGREEN}"Device configuration is done! Proceeding to the next step, 
 sleep 3
 clear
 
-printf ${CYAN}"Enter the number for the stage3 you want to use:\n1) ${WHITE}regular-openrc ${CYAN}recommended\n2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened\n${CYAN}> ${WHITE}"
+printf ${CYAN}"Enter the number for the stage3 you want to use:\n1) ${WHITE}regular-openrc ${MAGENTA}recommended\n2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened\n${CYAN}> ${WHITE}"
 read stage3select
 
 printf ${LIGHTGREEN}"Beginning the installation, this will take several minutes!\n"
@@ -245,8 +245,6 @@ printf ${LIGHTGREEN}"Beginning the installation, this will take several minutes!
 #copying files into place
 mount $part_3 /mnt/gentoo
 mv $script_dir/../deploygentoo-master /mnt/gentoo/
-mv $script_dir/../master.zip /mnt/gentoo/
-mv $script_dir/network_devices /mnt/gentoo/deploygentoo-master/
 
 
 install_vars=/mnt/gentoo/deploygentoo-master/
@@ -257,8 +255,7 @@ echo "$cpus" >> "$install_vars"
 echo "$part_1" >> "$install_vars"
 echo "$part_2" >> "$install_vars"
 echo "$part_3" >> "$install_vars"
-cat network_devices >> "$install_vars"
-rm -f $script_dir/network_devices
+
 
 case $stage3select in 
     1)
