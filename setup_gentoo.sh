@@ -247,9 +247,9 @@ mount $part_3 /mnt/gentoo
 mv $script_dir/../deploygentoo-master /mnt/gentoo/
 mv $script_dir/../master.zip /mnt/gentoo/
 mv $script_dir/network_devices /mnt/gentoo/deploygentoo-master/
-cd /mnt/gentoo/deploygentoo-master
 
-install_vars=/mnt/gentoo/deploygentoo-master
+
+install_vars=/mnt/gentoo/deploygentoo-master/
 cpus=$(grep -c ^processor /proc/cpuinfo)
 pluscpu=$(( cpus + 1 ))
 echo "$disk" >> "$install_vars"
@@ -258,7 +258,7 @@ echo "$part_1" >> "$install_vars"
 echo "$part_2" >> "$install_vars"
 echo "$part_3" >> "$install_vars"
 cat network_devices >> "$install_vars"
-rm -f network_devices
+rm -f $script_dir/network_devices
 
 case $stage3select in 
     1)
@@ -294,7 +294,7 @@ STAGE3_PATH_URL=http://distfiles.gentoo.org/releases/amd64/autobuilds/$GENTOO_TY
 STAGE3_PATH=$(curl -s $STAGE3_PATH_URL | grep -v "^#" | cut -d " " -f1)
 STAGE3_URL=http://distfiles.gentoo.org/releases/amd64/autobuilds/$STAGE3_PATH
 
-touch /mnt/gentoo/gentootype.txt
+
 echo $GENTOO_TYPE >> /mnt/gentoo/gentootype.txt
 
 cd /mnt/gentoo
