@@ -19,27 +19,26 @@ CYAN='\033[1;96m'
 printf ${MAGENTA}
 
 # exit setup directory
-cd ~
-start_dir=$(pwd)
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )$(pwd)
 
 # get disk info
-fdisk -l >> devices
-# get network info    #mkfs.ext4 $part_2
-ifconfig -s >> nw_devices
+fdisk -l >> $script_dir/devices
+# get network info
+ifconfig -s >> $script_dir/nw_devices
 
 # pass network info
-cut -d ' ' -f1 nw_devices >> network_devices
-rm -rf nw_devices
-sed -e "s/lo//g" -i network_devices
-sed -e "s/Iface//g" -i network_devices
-sed '/^$/d' network_devices
+cut -d ' ' -f1 $script_dir/nw_devices >> $script_dir/network_devices
+rm -rf $script_dir/nw_devices
+sed -e "s/lo//g" -i $script_dir/network_devices
+sed -e "s/Iface//g" -i $script_dir/network_devices
+sed '/^$/d' $script_dir/network_devices
 
 # pass disk info
-sed -e '\#Disk /dev/ram#,+5d' -i devices
-sed -e '\#Disk /dev/loop#,+5d' -i devices
+sed -e '\#Disk /dev/ram#,+5d' -i $script_dir/devices
+sed -e '\#Disk /dev/loop#,+5d' -i $script_dir/devices
 
 # show current disk configuration to the user
-cat devices
+cat $script_dir/devices
 
 errorMessage() {
     printf ${LIGHTRED}"$1\n"
@@ -52,7 +51,7 @@ deviceConfiguration() {
     printf ${CYAN}"Enter the device name you want to install gentoo on (ex, sda for /dev/sda)\n> ${WHITE}" ${CYAN}
     read disk
     disk="${disk,,}"
-    partition_count="$(grep -o $disk devices | wc -l)"
+    partition_count="$(grep -o $disk $script_dir/devices | wc -l)"
     disk_chk=("/dev/${disk}")
     
     # start messing with drives
@@ -97,7 +96,7 @@ deviceConfiguration() {
                         mkfs.ext4 $part_3
                         mkswap $part_2
                         swapon $part_2
-                        rm -rf devices
+                        rm -rf $script_dir/devices
                         clear
                         sleep 1
 
@@ -238,20 +237,19 @@ printf ${LIGHTGREEN}"Device configuration is done! Proceeding to the next step, 
 sleep 3
 clear
 
-printf ${CYAN}"Enter the number for the stage3 you want to use:\n1) ${WHITE}regular-openrc ${CYAN}recommended\n2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened"
+printf ${CYAN}"Enter the number for the stage3 you want to use:\n1) ${WHITE}regular-openrc ${CYAN}recommended\n2) ${WHITE}regular-systemd\n${CYAN}3) ${WHITE}desktop-openrc\n${CYAN}4) ${WHITE}desktop-systemd\n${CYAN}5) ${WHITE}hardened-openrc\n${CYAN}6) ${WHITE}musl\n${CYAN}7) ${WHITE}musl-hardened\n${CYAN}> ${WHITE}"
 read stage3select
 
 printf ${LIGHTGREEN}"Beginning the installation, this will take several minutes!\n"
 
 #copying files into place
 mount $part_3 /mnt/gentoo
-mv deploygentoo-master /mnt/gentoo
-mv master.zip /mnt/gentoo
-mv network_devices /mnt/gentoo/deploygentoo-master/
+mv $script_dir/../deploygentoo-master /mnt/gentoo/
+mv $script_dir/../master.zip /mnt/gentoo/
+mv $script_dir/network_devices /mnt/gentoo/deploygentoo-master/
 cd /mnt/gentoo/deploygentoo-master
 
 install_vars=/mnt/gentoo/deploygentoo-master
-install_vars
 cpus=$(grep -c ^processor /proc/cpuinfo)
 pluscpu=$(( cpus + 1 ))
 echo "$disk" >> "$install_vars"
