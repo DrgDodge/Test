@@ -19,7 +19,7 @@ CYAN='\033[1;96m'
 printf ${MAGENTA}
 
 # exit setup directory
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )$(pwd)
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # get disk info
 fdisk -l >> $script_dir/devices
