@@ -6,8 +6,9 @@
 # !!
 # !
 
-# Credits to MentalOutlaw for example and inspiration. This is my personal virsion as well as an update
+# Credits to MentalOutlaw and mimi0000oo for example and inspiration. This is my personal virsion as well as an update
 # MentalOutlaw's github repo: https://github.com/Mentaloutlaw/deploygentoo/
+# mimi0000oo github repo: https://github.com/mimi0000oo/deploygentoo/
 
 # just colors used in the script (ignore)
 LIGHTGREEN='\033[1;32m'
@@ -335,13 +336,15 @@ getStage3
 stage3=$(ls /mnt/gentoo/stage3*)
 tar xpvf $stage3 --xattrs-include='*.*' --numeric-owner
 printf "Stage3 ready!\n"
-
-
-
- 
-
- 
- 
- 
-
-
+mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf
+mkdir --parents /mnt/gentoo/etc/portage/repos.conf
+cp /mnt/gentoo/usr/share/portage/config/repos.conf /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
+mount --types proc /proc /mnt/gentoo/proc
+mount --rbind /sys /mnt/gentoo/sys
+mount --make-rslave /mnt/gentoo/sys
+mount --rbind /dev /mnt/gentoo/dev
+mount --make-rslave /mnt/gentoo/dev
+mount --bind /run /mnt/gentoo/run
+mount --make-slave /mnt/gentoo/run
+chroot /mnt/gentoo /bin/bash
