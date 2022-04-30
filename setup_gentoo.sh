@@ -55,7 +55,7 @@ deviceConfiguration() {
     disk_chk=("/dev/${disk}")
     
     # start messing with drives
-    if grep "$disk_chk" devices; then
+    if grep "$disk_chk" $script_dir/devices; then
 
         chooseBootMode() {
             printf ${CYAN}"Do you have EFI/UEFI mode or BIOS/Legacy mode active? For EFI/UEFI mode type \"efi\" or for BIOS/Legacy mode type \"bios\".\n${LIGHTRED}If you don't know the answer it is recommended to choose BIOS/Legacy mode (bios)\n${CYAN}> ${WHITE}"
